@@ -1,0 +1,31 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "clean": "rimraf dist",
+    "build": "babel --presets=@babel/preset-env src --out-dir dist --source-maps inline --copy-files",
+    "deploy-staging": "yarn clean && yarn build && cd dist &&  firebase use c2g-consulting && firebase target c2g-consulting &&firebase deploy --project=c2g-consulting --only functions",
+    "serve-staging": "yarn clean && yarn build && cd dist && firebase use c2g-consulting && firebase target c2g-consulting && firebase serve --project=c2g-consulting --only functions",
+    "watch-funcs": "babel --presets=@babel/preset-env  --verbose -w src/functions --out-dir dist/functions"
+  },
+  "dependencies": {
+    "@babel/cli": "^7.11.6",
+    "@babel/core": "^7.11.6",
+    "@babel/preset-env": "^7.11.5",
+    "@typescript-eslint/eslint-plugin": "^4.0.1",
+    "@typescript-eslint/parser": "^4.0.1",
+    "body-parser": "^1.19.0",
+    "compression": "^1.7.4",
+    "cors": "^2.8.5",
+    "cpx": "^1.5.0",
+    "express": "^4.17.1",
+    "firebase": "^7.19.1",
+    "firebase-admin": "^9.1.1",
+    "firebase-functions": "^3.11.0",
+    "regenerator-runtime": "^0.13.7",
+    "rimraf": "^3.0.2",
+    "typescript": "^4.0.2"
+  }
+}

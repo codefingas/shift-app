@@ -1,0 +1,41 @@
+Arguments: 
+  C:\Program Files\nodejs\node.exe C:\Program Files (x86)\Yarn\bin\yarn.js add @babel/cli @babel/core @babel/preset-env boby-parser compression cors cpx firebase firebase-admin firebase-functions regenerator-runtime typescript @typescript-eslint/parser @typescript-eslint/eslint-plugin
+
+PATH: 
+  C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;C:\Program Files (x86)\Yarn\bin\;C:\Program Files\Amazon\AWSCLIV2\;C:\Users\udohe\AppData\Roaming\nvm;C:\Program Files\nodejs;C:\Program Files\Git\cmd;C:\Users\udohe\AppData\Roaming\local\bin;C:\Users\udohe\AppData\Local\Programs\Python\Python38-32\Scripts\;C:\Users\udohe\AppData\Local\Programs\Python\Python38-32\;C:\Users\udohe\AppData\Local\Microsoft\WindowsApps;C:\Users\udohe\AppData\Local\Programs\Microsoft VS Code\bin;C:\Users\udohe\AppData\Local\Yarn\bin;C:\Users\udohe\AppData\Roaming\Python\Python38\Scripts;C:\Users\udohe\AppData\Roaming\npm;C:\Users\udohe\AppData\Roaming\nvm;C:\Program Files\nodejs;C:\cygwin64\bin;C:\Users\udohe\AppData\Local\Google\Cloud SDK\google-cloud-sdk\bin;C:\Users\udohe\AppData\Local\ngrok;
+
+Yarn version: 
+  1.22.4
+
+Node version: 
+  12.0.0
+
+Platform: 
+  win32 x64
+
+Trace: 
+  Error: https://registry.yarnpkg.com/boby-parser: Not found
+      at Request.params.callback [as _callback] (C:\Program Files (x86)\Yarn\lib\cli.js:66096:18)
+      at Request.self.callback (C:\Program Files (x86)\Yarn\lib\cli.js:140748:22)
+      at Request.emit (events.js:196:13)
+      at Request.<anonymous> (C:\Program Files (x86)\Yarn\lib\cli.js:141720:10)
+      at Request.emit (events.js:196:13)
+      at IncomingMessage.<anonymous> (C:\Program Files (x86)\Yarn\lib\cli.js:141642:12)
+      at Object.onceWrapper (events.js:284:20)
+      at IncomingMessage.emit (events.js:201:15)
+      at endReadableNT (_stream_readable.js:1130:12)
+      at processTicksAndRejections (internal/process/task_queues.js:83:17)
+
+npm manifest: 
+  {
+    "name": "server",
+    "version": "1.0.0",
+    "main": "index.js",
+    "license": "MIT"
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile

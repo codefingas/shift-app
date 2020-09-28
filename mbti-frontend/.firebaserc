@@ -1,0 +1,14 @@
+{
+  "projects": {
+    "default": "c2g-consulting"
+  },
+  "targets": {
+    "c2g-consulting": {
+      "hosting": {
+        "c2g-consulting": [
+          "shift-mbti"
+        ]
+      }
+    }
+  }
+}
