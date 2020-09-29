@@ -3,19 +3,21 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "serve-staging": "vue-cli-service serve --mode staging",
-    "deploy-staging" : "yarn build-staging && firebase use c2g-consulting && firebase target:apply hosting c2g-consulting shift-mbti  && firebase deploy --only hosting:shift-mbti",
+    "lint": "vue-cli-service lint",
     "build-staging": "vue-cli-service build --mode staging",
-    "lint": "vue-cli-service lint"
+    "deploy-staging": "yarn build-staging && firebase use c2g-consulting && firebase target:apply hosting c2g-consulting shift-mbti  && firebase deploy --only hosting:shift-mbti",
+    "serve-staging": "vue-cli-service serve --mode staging"
   },
   "dependencies": {
     "core-js": "^3.6.5",
     "vue": "^2.6.11",
+    "vue-router": "^3.2.0",
     "vuetify": "^2.2.11"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",
     "@vue/cli-plugin-eslint": "~4.5.0",
+    "@vue/cli-plugin-router": "~4.5.0",
     "@vue/cli-service": "~4.5.0",
     "babel-eslint": "^10.1.0",
     "eslint": "^6.7.2",

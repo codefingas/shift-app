@@ -3,14 +3,13 @@ import * as functions from "firebase-functions";
 import express from "express";
 import bodyParser from "body-parser";
 import compression from "compression";
+import api from "./api";
 
 const app = express();
 
 app.use(bodyParser.urlencoded({ extended: false }));
-// app.use(cors({origin: true}));
 
 app.use((req, res, next) => {
-  // console.log( "RES", res);
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader(
     "Access-Control-Allow-Methods",
@@ -33,8 +32,12 @@ app.get("/", (req, res) => {
   res.status(200).json({ ok: "ALIVE" });
 });
 
+const apis = Object.keys(api);
 
+for (let ix = 0; ix < apis.length; ix++) {
+  let route = api[apis[ix]]();
 
-
+  app.use("/mbti/api", route);
+}
 
 exports.mbti = functions.https.onRequest(app);

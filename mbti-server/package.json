@@ -6,7 +6,7 @@
   "scripts": {
     "clean": "rimraf dist",
     "build": "babel --presets=@babel/preset-env src --out-dir dist --source-maps inline --copy-files",
-    "deploy-staging": "yarn clean && yarn build && cd dist &&  firebase use c2g-consulting && firebase target c2g-consulting &&firebase deploy --project=c2g-consulting --only functions",
+    "deploy-staging": "yarn clean && yarn build && cd dist && firebase use c2g-consulting && firebase target c2g-consulting && firebase deploy --project=c2g-consulting --only functions",
     "serve-staging": "yarn clean && yarn build && cd dist && firebase use c2g-consulting && firebase target c2g-consulting && firebase serve --project=c2g-consulting --only functions",
     "watch-funcs": "babel --presets=@babel/preset-env  --verbose -w src/functions --out-dir dist/functions"
   },

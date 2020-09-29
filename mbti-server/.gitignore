@@ -1,35 +1,10 @@
-.DS_Store
-./mbti-frontend/.DS_Store
-./mbti-frontend/node_modules
-./mbti-frontend/dist
-./mbti-frontend/.env
-./mbti-frontend/.env.staging
-
-# local env files
-./mbti-frontend/.env.local
-./mbti-frontend/.env.*.local
-
-# Log files
-./mbti-frontend/npm-debug.log*
-./mbti-frontend/yarn-debug.log*
-./mbti-frontend/yarn-error.log*
-
-# Editor directories and files
-.idea
-.vscode
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-
 # Logs
-server/logs
+logs
 *.log
-mbti-server/npm-debug.log*
-mbti-server/yarn-debug.log*
-mbti-server/yarn-error.log*
-mbti-server/firebase-debug.log*
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+firebase-debug.log*
 
 # Firebase cache
 .firebase/
@@ -87,7 +62,4 @@ node_modules/
 .yarn-integrity
 
 # dotenv environment variables file
-mbti-server/.env
-mbti-server/.env.development
-mbti-server/dist
-roadmap.txt
+.env
