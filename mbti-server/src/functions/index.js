@@ -33,11 +33,8 @@ app.get("/", (req, res) => {
 });
 
 const apis = Object.keys(api);
-
 for (let ix = 0; ix < apis.length; ix++) {
-  let route = api[apis[ix]]();
-
-  app.use("/mbti/api", route);
+  app.use(`/api/${apis[ix]}`, api[apis[ix]]());
 }
 
 exports.mbti = functions.https.onRequest(app);

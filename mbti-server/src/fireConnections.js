@@ -1,8 +1,7 @@
 import * as fireadmin from "firebase-admin";
+import serviceAccount from "./serviceAccounts.json";
 // import firebase from 'firebase';
 import config from './config';
-const serviceAccountJsonName = `./ajo-${config.environment}-serviceAccount.json`;
-const serviceAccount = require(serviceAccountJsonName);
 
 
 

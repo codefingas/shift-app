@@ -90,4 +90,6 @@ node_modules/
 mbti-server/.env
 mbti-server/.env.development
 mbti-server/dist
+config.js
+serviceAccount.json
 roadmap.txt

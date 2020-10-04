@@ -1,22 +1,21 @@
 <template>
   <v-app>
-   <Navbar />
+    <Navbar />
     <v-main>
-      <router-view></router-view>
+      <transition name="slide">
+        <router-view></router-view>
+      </transition>
     </v-main>
   </v-app>
 </template>
 
 <script>
-import Home from "./views/Home";
 import Navbar from "./components/layouts/Navbar";
 export default {
   name: "App",
   components: {
-    Home,
-    Navbar
+    Navbar,
   },
-  data: () => ({
-  }),
+  data: () => ({}),
 };
 </script>

@@ -32,6 +32,7 @@
                           v-model="rows[index]"
                           row
                           :rules="radioRules"
+                          :disabled="processing"
                         >
                           <v-radio
                             v-for="i in 7"
@@ -39,7 +40,7 @@
                             :key="`${index},${i}`"
                             :color="
                               i < 4
-                                ? `red lighten-${i}`
+                                ? i > 0 ? `red lighten-${i + 1}` : `red lighten-${i}`
                                 : i === 4
                                 ? `grey`
                                 : `green lighten-${7 - i}`
@@ -71,17 +72,25 @@
                     v-model="email"
                     :rules="emailRules"
                     clearable
+                    :disabled="processing"
                   >
                   </v-text-field>
                 </v-col>
               </v-row>
               <div class="text-center">
-                <v-alert class="center-item" icon="mdi-alert" width="50%" v-if="incomplete" type="warning">
-                  You have to answer all questions
+                <v-alert
+                  class="center-item"
+                  icon="mdi-alert"
+                  width="50%"
+                  v-if="incomplete"
+                  :type="`${errorType || 'warning'}`"
+                >
+                  {{errorText || "You have to answer all questions"}}
                 </v-alert>
               </div>
               <div class="text-center my-3">
                 <v-btn
+                  v-if="!processing"
                   color="primary"
                   class="text-no-transform"
                   medium
@@ -89,6 +98,7 @@
                 >
                   Save & Continue
                 </v-btn>
+                <Loader v-if="processing" />
               </div>
             </v-card-text>
           </v-card>
@@ -99,108 +109,154 @@
 </template>
 
 <script>
+import Loader from "../components/Resources/loader";
+import UserController from "../services/userCtrl";
+/**
+ * having built front end
+ *    - build submit functionality
+ *          - the assessment and email goes to backend * done
+ *              - the email is confirmed if existent * done
+ *                      - if it is(ask for password), the assessment gets added to the previous ones (using hash key) * done 
+ *                                - create perspective page *done
+ *                                      -  how does the data get displayed * done
+ *                                      - 
+ *                                - in this case, show previous data when they log in
+ *                      - what to do when the user doesnt provide a password but gives right email (email answer but dont save? ask tech lead)
+ *                      - if not - create a new user with assessment
+ *                                - ask to create new password(if password was added) / cancel (if cancelled view answers)
+ *  - build send email functionality
+ *        - when user wants to send mail to themselves, say (you have to login first)
+ *    - build login functionality
+ */
 export default {
   name: "Home",
+  components: { Loader },
   props: ["toggleDialog"],
   data() {
     return {
       incomplete: false,
+      errorType: null,
       email: "",
+      errorText: null,
+      emailRegex: /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/,
       rows: [null, null, null, null, null, null, null, null, null, null],
       emailRules: [
         (v) => !!v || "E-mail is required",
-        (v) =>
-          /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v) ||
-          "E-mail must be valid",
+        (v) => this.emailRegex.test(v) || "E-mail must be valid",
       ],
-      radioRules: [(v) => {
-        if(!v && this.email.length != 0){
-         this.incomplete = true;
-        } else {
-          this.incomplete = false;
-        }
-        return !!v || "You have to select a value";
-      } ],
+      radioRules: [
+        (v) => {
+          if (!v && this.email.length != 0) {
+            this.incomplete = true;
+          } else {
+            this.incomplete = false;
+          }
+          return !!v || "You have to select a value";
+        },
+      ],
       questions: [
         {
           question:
             "You find it takes effort to introduce yourself to other people",
           dimension: "EI",
+          direction: 1,
           meaning: "I",
         },
         {
           question: "You consider yourself more practical than creative",
           dimension: "SN",
+          direction: -1,
           meaning: "S",
         },
         {
           question:
             "Winning a debate matters less to you than making sure no one gets upset",
           dimension: "TF",
+          direction: 1,
           meaning: "F",
         },
         {
           question:
             "You get energized going to social events that involve many interactions.",
           dimension: "EI",
+          direction: -1,
           meaning: "E",
         },
         {
           question:
             "You often spend time exploring unrealistic and impractical yet intriguing ideas.",
           dimension: "SN",
+          direction: 1,
           meaning: "N",
         },
         {
           question:
             "Deadlines seem to you to be of relative rather than absolute importance.",
           dimension: "JP",
+          direction: 1,
           meaning: "P",
         },
         {
           question:
             "Logic is usually more important than heart when it comes to making important decisions.",
           dimension: "TF",
+          direction: -1,
           meaning: "T",
         },
         {
           question: "Your home and work environments are quite tidy",
           dimension: "JP",
+          direction: -1,
           meaning: "J",
         },
         {
           question: "You do not mind being at the center of attention",
           dimension: "EI",
+          direction: -1,
           meaning: "E",
         },
         {
           question:
             "Keeping your options open is more important than having a to-do list.",
           dimension: "JP",
+          direction: 1,
           meaning: "P",
         },
       ],
       assessment: {},
+      processing: false,
     };
   },
   methods: {
     addAssessment(index, response) {
       this.$set(this.rows, index, response);
-      let question = this.questions[index];
-      let meaning =
-        response === 4 || response > 4
-          ? question.meaning
-          : question.dimension.split(question.meaning)[0];
       this.assessment[index] = {
-        question: this.questions[index].question,
+        question: this.questions[index],
         response,
-        meaning,
       };
     },
-    assess() {
-      console.log("the data", this.assessment);
-      this.$refs.assessments.validate();
+    async assess() {
+      if (this.$refs.assessments.validate()) {
+        this.processing = true;
+        await UserController.submitAssessment({
+          email: this.email,
+          assessment: this.assessment,
+        }).then(result => {
+          let {assessmentId} = result;
+          this.$router.params = {assessmentId};
+          this.$router.push("/result");
+          this.processing = false;
+        }).catch(err => {
+          this.processing = false;
+          this.incomplete = true;
+          this.errorType = "error";
+          this.errorText = err.message;
+        });
+      }
     },
+  },
+  mounted() {
+    // console.log(this.$router.params);
   },
 };
 </script>
@@ -218,6 +274,6 @@ export default {
 }
 
 .center-item {
-  margin : 0 auto;
+  margin: 0 auto;
 }
 </style>
