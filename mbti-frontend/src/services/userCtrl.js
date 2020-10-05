@@ -50,7 +50,23 @@ class UserController {
     //TODO: CREATE SEND EMAIL TO LOGIN FUNCTIONALITY - SSO
   }
 
-  static getUser() {}
+  static getUserData() {
+    return new Promise(async (resolve, reject) => {
+      await Auth.onAuthStateChanged(async (user) => {
+        if (user) {
+          await UserCalls.postCalls("/getUserData", { uid: user.uid })
+            .then((resp) => {
+              resolve(resp);
+            })
+            .catch((err) => {
+              reject(err);
+            });
+        } else {
+          resolve(null);
+        }
+      });
+    });
+  }
 
   static signUp(data) {
     return new Promise(async (resolve, reject) => {
@@ -92,7 +108,7 @@ class UserController {
     });
   }
 
-  static sendEmail(data = {}){
+  static sendEmail(data = {}) {
     return new Promise(async (resolve, reject) => {
       await UserCalls.postCalls(`/mail/send`, data)
         .then((result) => resolve(result))

@@ -154,7 +154,8 @@ export default {
       })
         .then((resp) => {
           this.sendingMail = false;
-          (this.errorType = "success"), (this.errorText = resp.message.toUpperCase);
+          (this.errorType = "success"),
+            (this.errorText = resp.message.toUpperCase());
           this.sentMail = true;
         })
         .catch((err) => {

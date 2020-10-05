@@ -13,9 +13,19 @@ const users = () => {
   router.get(`/emailconfirm/:email`, async (req, res) => {
     let { email } = req.params;
     await controller
-      .confirmEmail(email)
-      .then((user) => console.log("THE USER", user))
-      .catch((err) => console.log("THE ERROR", err));
+      .findUser(email)
+      .then((users) => {
+        if (!!users) {
+          res.status(200).json({ message: "is not a user", isUser: false });
+          return;
+        } else {
+          res.status(200).json({ message: "is a user", isUser: true });
+          return;
+        }
+      })
+      .catch((err) => {
+        res.status(500).json({ isUser: false, message: `an error occured ${err}` });
+      });
   });
 
   router.post("/assessment", async (req, res) => {
@@ -29,14 +39,7 @@ const users = () => {
 
   router.post("/mail/send", async (req, res) => {
     let { body } = req;
-    console.log("GOT HERE THE BODY", body);
     let { email, result } = body;
-
-    /**
-     * should take the user id / the UID to get the information of who to send to
-     *  for now we can work with email
-     *      -
-     */
     if (!email || !result) {
       res.status(400).json({ message: "You need to provide an email" });
       return;
@@ -46,8 +49,7 @@ const users = () => {
         "Your MBTI test result",
         `You are ${result}`
       );
-      console.log("THE SENT MAIL", sendTestToUser);
-      res.status(sendTestToUser.statusCode).json({message: 'sent'});
+      res.status(sendTestToUser.statusCode).json({ message: "sent" });
       return;
     }
   });

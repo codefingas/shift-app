@@ -124,11 +124,22 @@ import UserController from "../services/userCtrl";
  *                      - what to do when the user doesnt provide a password but gives right email (email answer but dont save? ask tech lead)
  *                      - if not - create a new user with assessment
  *                                - ask to create new password(if password was added) / cancel (if cancelled view answers)
- *  - build send email functionality - almost done
+ *  - build send email functionality - almost done * done
  *        - when user wants to send mail to themselves, say (you have to login first) * resolved
  *                    - throw open a dialog for this, dialog should have the login form * resolved
  * 
- *    - build login functionality
+ *    - build login functionality * done
+ *        - check for email 
+ *                  - a processing variable which will be passed to the navbar and modal component should be available *done
+ *                - if present login * done
+ *                - if absent create account *done
+ * 
+
+ *    - Feature to get previous records 
+            - create a modal
+            - use the assements items to loop over the template
+            - display a loader while the items load
+
  */
 export default {
   name: "Home",

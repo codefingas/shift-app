@@ -15,13 +15,8 @@ const controller = {
     return true;
   },
   submitAssessment: async (req, res) => {
-    /**
-     * so its supposed to confirm email and return results
-     *  -
-     */
     let { email, assessment } = req.body;
     let result = assessmentController.calculateAssessment(assessment);
-    // console.log("THE ASSESSMENT", assessment, "THE RESULT", result);
   
     await Promise.all([
       controller.findUser(email),
