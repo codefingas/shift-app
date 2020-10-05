@@ -47,7 +47,7 @@ class UserController {
   }
 
   static sendEmailToLogin() {
-    //TODO: CREATE SEND EMAIL TO LOGIN FUNCTIONALITY
+    //TODO: CREATE SEND EMAIL TO LOGIN FUNCTIONALITY - SSO
   }
 
   static getUser() {}
@@ -88,6 +88,14 @@ class UserController {
     return new Promise(async (resolve, reject) => {
       await UserCalls.getCalls(`/test/${id}`)
         .then((test) => resolve(test))
+        .catch((err) => reject(err));
+    });
+  }
+
+  static sendEmail(data = {}){
+    return new Promise(async (resolve, reject) => {
+      await UserCalls.postCalls(`/mail/send`, data)
+        .then((result) => resolve(result))
         .catch((err) => reject(err));
     });
   }

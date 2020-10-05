@@ -124,8 +124,10 @@ import UserController from "../services/userCtrl";
  *                      - what to do when the user doesnt provide a password but gives right email (email answer but dont save? ask tech lead)
  *                      - if not - create a new user with assessment
  *                                - ask to create new password(if password was added) / cancel (if cancelled view answers)
- *  - build send email functionality
- *        - when user wants to send mail to themselves, say (you have to login first)
+ *  - build send email functionality - almost done
+ *        - when user wants to send mail to themselves, say (you have to login first) * resolved
+ *                    - throw open a dialog for this, dialog should have the login form * resolved
+ * 
  *    - build login functionality
  */
 export default {
@@ -243,7 +245,7 @@ export default {
           assessment: this.assessment,
         }).then(result => {
           let {assessmentId} = result;
-          this.$router.params = {assessmentId};
+          this.$router.params = {assessmentId, email: this.email};
           this.$router.push("/result");
           this.processing = false;
         }).catch(err => {

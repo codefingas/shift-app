@@ -4,6 +4,9 @@
       There is nothing to display take test to begin <br />
       <a href="/">take test</a>
     </div>
+
+    <!-- change the v-if value below to display card -->
+
     <v-card v-if="!isParamed" height="275px" class="d-flex align-center">
       <div v-if="fetchingData" class="text-center auto-margin">
         <Loader />
@@ -44,15 +47,35 @@
         </v-row>
       </v-container>
     </v-card>
+    <div class="text-center">
+      <v-alert
+        class="center-item"
+        icon="mdi-alert"
+        width="50%"
+        v-if="sentMail"
+        :type="`${errorType || 'warning'}`"
+      >
+        {{ errorText || "You have to answer all questions" }}
+      </v-alert>
+    </div>
+    <div v-if="!isParamed && !fetchingData" class="text-center mt-3">
+      <Loader v-if="sendingMail" />
+      <v-btn
+        v-if="!sendingMail"
+        medium
+        dark
+        color="primary lighten-2"
+        rounded
+        @click="sendEmail()"
+      >
+        send as email
+      </v-btn>
+    </div>
   </div>
 </template>
 
 <script>
-/**
- * I can tell which position from its counter part
- *
- */
-
+import firebase from "firebase";
 import Loader from "../components/Resources/loader";
 import UserController from "../services/userCtrl";
 export default {
@@ -61,6 +84,7 @@ export default {
   },
   data() {
     return {
+      user: null,
       spectrum: {
         E: {
           name: "Extraversion (E)",
@@ -99,6 +123,10 @@ export default {
       isParamed: false,
       data: [],
       result: "",
+      sendingMail: false,
+      sentMail: false,
+      errorType: null,
+      errorText: "",
     };
   },
   methods: {
@@ -118,8 +146,30 @@ export default {
         };
       });
     },
+    async sendEmail() {
+      this.sendingMail = true;
+      await UserController.sendEmail({
+        email: this.$router.params.email,
+        result: this.result,
+      })
+        .then((resp) => {
+          this.sendingMail = false;
+          (this.errorType = "success"), (this.errorText = resp.message.toUpperCase);
+          this.sentMail = true;
+        })
+        .catch((err) => {
+          this.errorType = "warning";
+          this.errorText =
+            "Unable to send mail - please confirm your email " +
+            " " +
+            err.message;
+          this.sentMail = true;
+          this.sendingMail = false;
+        });
+    },
   },
   mounted() {
+    this.user = firebase.auth().currentUser;
     if (!this.$router.params) {
       this.isParamed = true;
     } else {
@@ -128,7 +178,7 @@ export default {
         (result) => {
           this.result = result;
           this.generateReport(result);
-            this.fetchingData = false;
+          this.fetchingData = false;
         }
       );
     }
@@ -142,5 +192,9 @@ export default {
 }
 .result-name {
   color: #878787;
+}
+
+.center-item {
+  margin: 0 auto;
 }
 </style>

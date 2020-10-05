@@ -28,12 +28,29 @@ const users = () => {
   });
 
   router.post("/mail/send", async (req, res) => {
+    let { body } = req;
+    console.log("GOT HERE THE BODY", body);
+    let { email, result } = body;
+
     /**
-     * takes user id / the UID
+     * should take the user id / the UID to get the information of who to send to
+     *  for now we can work with email
+     *      -
      */
-    let sendTestToUser = await MailController.send();
-    console.log("SENT TEST", sendTestToUser);
-  })
+    if (!email || !result) {
+      res.status(400).json({ message: "You need to provide an email" });
+      return;
+    } else {
+      let [sendTestToUser] = await MailController.sendToOne(
+        email,
+        "Your MBTI test result",
+        `You are ${result}`
+      );
+      console.log("THE SENT MAIL", sendTestToUser);
+      res.status(sendTestToUser.statusCode).json({message: 'sent'});
+      return;
+    }
+  });
 
   return router;
 };

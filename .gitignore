@@ -91,5 +91,5 @@ mbti-server/.env
 mbti-server/.env.development
 mbti-server/dist
 config.js
-serviceAccount.json
+serviceAccounts.json
 roadmap.txt
