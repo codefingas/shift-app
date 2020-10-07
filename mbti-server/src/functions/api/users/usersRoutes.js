@@ -6,16 +6,23 @@ import MailController from "../../../services/mailing/mailController";
 const users = () => {
   const router = Router();
 
-  router.post("/signup", (req, res) => {
-    controller.signup(req, res);
+  router.post("/signup", async (req, res) => {
+    await controller.signup(req, res);
+    return;
   });
+
+  router.post("/getUserData", async (req, res) => {
+    let [user] = await controller.getUser(req.body.uid);
+    res.status(200).json(user);
+    return;
+  })
 
   router.get(`/emailconfirm/:email`, async (req, res) => {
     let { email } = req.params;
     await controller
       .findUser(email)
       .then((users) => {
-        if (!!users) {
+        if (users.length === 0) {
           res.status(200).json({ message: "is not a user", isUser: false });
           return;
         } else {
@@ -24,17 +31,28 @@ const users = () => {
         }
       })
       .catch((err) => {
-        res.status(500).json({ isUser: false, message: `an error occured ${err}` });
+        res
+          .status(500)
+          .json({ isUser: false, message: `an error occured ${err}` });
       });
+    return;
   });
 
   router.post("/assessment", async (req, res) => {
-    controller.submitAssessment(req, res);
+    await controller.submitAssessment(req, res);
+    return;
+  });
+
+  router.get("/getTests/:userId", async (req, res) => {
+    let tests = await controller.getUserTests(req.params.userId);
+    res.status(200).json(tests);
+    return;
   });
 
   router.get("/test/:id", async (req, res) => {
     let test = await assessmentController.getTest(req.params.id);
     res.status(200).json(test);
+    return;
   });
 
   router.post("/mail/send", async (req, res) => {
