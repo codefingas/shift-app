@@ -37,7 +37,7 @@
                           <v-radio
                             v-for="i in 7"
                             :value="i"
-                            :key="`${index},${i}`"
+                            :key="i"
                             :color="
                               i < 4
                                 ? i > 0 ? `red lighten-${i + 1}` : `red lighten-${i}`
@@ -111,36 +111,6 @@
 <script>
 import Loader from "../components/Resources/loader";
 import UserController from "../services/userCtrl";
-/**
- * having built front end
- *    - build submit functionality
- *          - the assessment and email goes to backend * done
- *              - the email is confirmed if existent * done
- *                      - if it is(ask for password), the assessment gets added to the previous ones (using hash key) * done 
- *                                - create perspective page *done
- *                                      -  how does the data get displayed * done
- *                                      - 
- *                                - in this case, show previous data when they log in
- *                      - what to do when the user doesnt provide a password but gives right email (email answer but dont save? ask tech lead)
- *                      - if not - create a new user with assessment
- *                                - ask to create new password(if password was added) / cancel (if cancelled view answers)
- *  - build send email functionality - almost done * done
- *        - when user wants to send mail to themselves, say (you have to login first) * resolved
- *                    - throw open a dialog for this, dialog should have the login form * resolved
- * 
- *    - build login functionality * done
- *        - check for email 
- *                  - a processing variable which will be passed to the navbar and modal component should be available *done
- *                - if present login * done
- *                - if absent create account *done
- * 
-
- *    - Feature to get previous records 
-            - create a modal
-            - use the assements items to loop over the template
-            - display a loader while the items load
-
- */
 export default {
   name: "Home",
   components: { Loader },

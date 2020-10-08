@@ -4,6 +4,10 @@
 ./mbti-frontend/dist
 ./mbti-frontend/.env
 ./mbti-frontend/.env.staging
+./mbti-frontend/.env.production
+./mbti-frontend/.env.development
+./mbti-frontend/dist
+
 
 # local env files
 ./mbti-frontend/.env.local
@@ -93,3 +97,4 @@ mbti-server/dist
 config.js
 serviceAccounts.json
 roadmap.txt
+server2

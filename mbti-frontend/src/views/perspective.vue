@@ -7,46 +7,57 @@
 
     <!-- change the v-if value below to display card -->
 
-    <v-card v-if="!isParamed" height="275px" class="d-flex align-center">
+    <div v-if="!isParamed">
       <div v-if="fetchingData" class="text-center auto-margin">
         <Loader />
       </div>
       <v-container v-if="!fetchingData">
-        <v-row>
-          <v-col md="6" sm="12" xs="12">
-            <h1 style="color: #113264" class="pt-12 mt-12">
-              Your Perspective
-            </h1>
-            <p>Your Perspective Type is {{ result }}</p>
-          </v-col>
-          <v-col md="6" sm="12" xs="12">
-            <v-container fluid>
-              <v-row v-for="(result, index) in data" :key="index">
-                <v-col mb="1">
-                  <p class="result-name">
-                    {{ result.option1 }}
-                  </p>
-                </v-col>
-                <v-col mb="10">
-                  <v-progress-linear
-                    color="#A920CB"
-                    background-color="#E9ECEF"
-                    value="50"
-                    height="20px"
-                    :reverse="result.reverse"
-                  ></v-progress-linear>
-                </v-col>
-                <v-col mb="1">
-                  <p class="result-name">
-                    {{ result.option2 }}
-                  </p>
-                </v-col>
-              </v-row>
-            </v-container>
-          </v-col>
-        </v-row>
+        <ul>
+          <transition-group name="slideY">
+            <li v-for="(results, index) in data" :key="index">
+              <v-card height="275px" class="d-flex align-center mt-3">
+                <v-row class="px-3">
+                  <v-col md="6" sm="12" xs="12">
+                    <h1 style="color: #113264" class="pt-12 mt-12">
+                      Your Perspective
+                    </h1>
+                    <p>Your Perspective Type is {{ results.name }}</p>
+                  </v-col>
+                  <v-col md="6" sm="12" xs="12">
+                    <v-container fluid>
+                      <v-row
+                        v-for="(result, index) in results.data"
+                        :key="`${result.name}${index}`"
+                      >
+                        <v-col mb="1">
+                          <p class="result-name">
+                            {{ result.option1 }}
+                          </p>
+                        </v-col>
+                        <v-col mb="10">
+                          <v-progress-linear
+                            color="#A920CB"
+                            background-color="#E9ECEF"
+                            value="50"
+                            height="20px"
+                            :reverse="result.reverse"
+                          ></v-progress-linear>
+                        </v-col>
+                        <v-col mb="1">
+                          <p class="result-name">
+                            {{ result.option2 }}
+                          </p>
+                        </v-col>
+                      </v-row>
+                    </v-container>
+                  </v-col>
+                </v-row>
+              </v-card>
+            </li>
+          </transition-group>
+        </ul>
       </v-container>
-    </v-card>
+    </div>
     <div class="text-center">
       <v-alert
         class="center-item"
@@ -58,10 +69,13 @@
         {{ errorText || "You have to answer all questions" }}
       </v-alert>
     </div>
-    <div v-if="!isParamed && !fetchingData" class="text-center mt-3">
+    <div
+      v-if="data.length !== 0 && !isParamed && data.length < 2 && !fetchingData"
+      class="text-center mt-3"
+    >
       <Loader v-if="sendingMail" />
       <v-btn
-        v-if="!sendingMail"
+        v-else
         medium
         dark
         color="primary lighten-2"
@@ -75,7 +89,6 @@
 </template>
 
 <script>
-import firebase from "firebase";
 import Loader from "../components/Resources/loader";
 import UserController from "../services/userCtrl";
 export default {
@@ -122,7 +135,7 @@ export default {
       fetchingData: false,
       isParamed: false,
       data: [],
-      result: "",
+      result: null,
       sendingMail: false,
       sentMail: false,
       errorType: null,
@@ -130,8 +143,13 @@ export default {
     };
   },
   methods: {
-    generateReport(result) {
-      this.data = result.split("").map((v) => {
+    generateReport(name) {
+      /**
+       * there may be many ids comming in so data has to be an array of objects depicting the values they had
+       *
+       * it is expecting a results.data
+       */
+      let data = name.split("").map((v) => {
         let vee = v.toUpperCase(),
           dimension = this.spectrum[vee].dimension,
           options = dimension.split(""),
@@ -145,12 +163,14 @@ export default {
           reverse,
         };
       });
+
+      return { name, data };
     },
     async sendEmail() {
       this.sendingMail = true;
       await UserController.sendEmail({
         email: this.$router.params.email,
-        result: this.result,
+        result: this.data[0].name,
       })
         .then((resp) => {
           this.sendingMail = false;
@@ -169,16 +189,29 @@ export default {
         });
     },
   },
-  mounted() {
-    this.user = firebase.auth().currentUser;
+  async mounted() {
+    
+    this.user = await UserController.getUserData();
     if (!this.$router.params) {
       this.isParamed = true;
+    } else if (this.$router.params && this.$router.params.userId) {
+      this.fetchingData = true;
+      await UserController.getPrevAssessments(this.$router.params.userId).then(
+        (assessments) => {
+          if (assessments.noTest) {
+            this.isParamed = false;
+          } else {
+            this.data = assessments.tests.map((v) => this.generateReport(v));
+            this.fetchingData = false;
+          }
+        }
+      );
     } else {
       this.fetchingData = true;
-      UserController.getTest(this.$router.params.assessmentId).then(
+      await UserController.getTest(this.$router.params.assessmentId).then(
         (result) => {
-          this.result = result;
-          this.generateReport(result);
+          let data = this.generateReport(result);
+          this.data = [data];
           this.fetchingData = false;
         }
       );
@@ -197,5 +230,21 @@ export default {
 
 .center-item {
   margin: 0 auto;
+}
+
+.slideY-fade-enter-active {
+  transition: all 0.8s ease;
+}
+.slideY-fade-leave-active {
+  transition: all 0.8s cubic-bezier(1, 0.5, 0.8, 1);
+}
+.slideY-fade-enter, .slideY-fade-leave-to
+/* .slide-fade-leave-active below version 2.1.8 */ {
+  transform: translateY(10px);
+  opacity: 0;
+}
+
+ul li {
+  list-style: none;
 }
 </style>

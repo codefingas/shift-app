@@ -32,6 +32,7 @@ class UserController {
   }
 
   static logout() {
+    console.log("SIGN OUT")
     return new Promise(async (resolve, reject) => {
       Auth.signOut()
         .then(() => {
@@ -105,6 +106,14 @@ class UserController {
       await UserCalls.getCalls(`/test/${id}`)
         .then((test) => resolve(test))
         .catch((err) => reject(err));
+    });
+  }
+
+  static getPrevAssessments(userId) {
+    return new Promise(async (resolve, reject) => {
+      await UserCalls.getCalls(`/getTests/${userId}`)
+      .then((test) => resolve(test))
+      .catch((err) => reject(err));
     });
   }
 

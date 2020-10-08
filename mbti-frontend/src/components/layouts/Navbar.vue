@@ -4,14 +4,18 @@
       <v-spacer></v-spacer>
       <span v-if="user" class="mx-3">
         <span>Welcome, {{ user.email }}</span>
-        <a href="#/" v-if="user.assessments.length > 0">view previous tests</a>
+        <a
+          v-if="user.assessments.length > 0"
+          @click="viewPrev()"
+          class="mx-3"
+          >view previous tests</a
+        >
       </span>
 
       <Loader v-if="processing" />
-
-      <div v-if="!processing">
+      <div v-else>
         <v-btn
-          @click="toggleDialog()"
+          @click="logout()"
           dark
           color="primary lighten-2"
           x-large
@@ -29,7 +33,7 @@
           color="primary lighten-2"
           x-large
           rounded
-          v-if="!user"
+          v-else
           transition="fade-transition"
         >
           <span class="mr-2">Login</span>
@@ -37,6 +41,7 @@
         </v-btn>
       </div>
     </v-app-bar>
+
     <Dialog
       :processing="processing"
       :dialog="dialog"
@@ -47,11 +52,14 @@
 </template>
 
 <script>
+/*eslint-disable no-async-promise-executor */
 import UserController from "../../services/userCtrl";
+import Loader from "../../components/Resources/loader";
 import Dialog from "../modal";
 export default {
   components: {
     Dialog,
+    Loader,
   },
   data() {
     return {
@@ -62,25 +70,48 @@ export default {
     };
   },
   methods: {
+    viewPrev() {
+      this.$router.params = { ...this.$route.params, userId: this.user.id };
+      this.$router.push("/result");
+    },
     toggleDialog() {
       this.dialog = !this.dialog;
     },
-    logout() {
-      UserController.logout();
+    async logout() {
+      this.processing = true;
+      await UserController.logout();
+      this.user = null;
+      this.processing = false;
     },
     async authentication(email, password) {
       this.toggleProcessing();
-      await UserController.confirmUserByEmail(email).then(async (resp) => {
-        if (resp.isUser) {
-          await UserController.login(email, password).then((user) => {
-            this.setUser(user);
-          });
-        } else {
-          await UserController.signUp({ email, password }).then((user) => {
-            this.setUser(user);
-          });
-        }
-        this.toggleProcessing();
+
+      return new Promise(async (resolve, reject) => {
+        await UserController.confirmUserByEmail(email).then(async (resp) => {
+          this.toggleDialog();
+          if (resp.isUser) {
+            await UserController.login(email, password)
+              .then((user) => {
+                this.setUser(user);
+                resolve(null);
+              })
+              .catch((err) => {
+                this.toggleDialog();
+                reject(err);
+              });
+          } else {
+            await UserController.signUp({ email, password })
+              .then((user) => {
+                this.setUser(user);
+                resolve(null);
+              })
+              .catch((err) => {
+                this.toggleDialog();
+                reject(err);
+              });
+          }
+          this.toggleProcessing();
+        });
       });
     },
     toggleProcessing() {
@@ -96,7 +127,23 @@ export default {
     },
   },
   async mounted() {
-    this.user = await UserController.getUserData();
+    this.processing = true;
+    let user = await UserController.getUserData();
+    this.setUser(user);
+    this.processing = false;
   },
 };
 </script>
+
+<style scoped>
+.auto-margin {
+  margin: 0 auto;
+}
+.result-name {
+  color: #878787;
+}
+
+.center-item {
+  margin: 0 auto;
+}
+</style>

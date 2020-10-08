@@ -32,9 +32,7 @@ const controller = {
              }
           }
     }
-    console.log("THE RESULT",  Object.values(result)
-    .map((v) => v.meaning)
-    .join(""));
+
     return Object.values(result)
       .map((v) => v.meaning)
       .join("");

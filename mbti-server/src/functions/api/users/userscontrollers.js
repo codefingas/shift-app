@@ -61,28 +61,28 @@ const controller = {
           .sort((a, b) => b - a)
           .map((v) => user.assessments[v])
       : [];
-
-    if (!assessments.length) {
+    
+    if (assessments.length === 0) {
       return { noTests: true };
     } else {
+      let results = await Promise.all(assessments.map(async (v) => {
+        let {
+          id,
+          cd_year,
+          cd_day,
+          cd_month,
+          created,
+          ...test
+        } = await assessmentOrm.getOne(v);
+        return test;
+      }));
+      
+      return {
+        tests: results.map((v) => assessmentController.calculateAssessment(v)),
+        noTests: false,
+      };
+
     }
-
-    let results = assessments.map(async (v) => {
-      let {
-        id,
-        cd_year,
-        cd_day,
-        cd_month,
-        created,
-        ...test
-      } = await assessmentOrm.getOne(v);
-      return test;
-    });
-
-    return {
-      tests: results.map((v) => assessmentController.calculateAssessment(v)),
-      noTests: false,
-    };
   },
 };
 

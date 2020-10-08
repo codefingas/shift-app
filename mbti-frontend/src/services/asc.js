@@ -1,6 +1,6 @@
 /*eslint-disable no-async-promise-executor */
 // const url = process.env.VUE_APP_SERVER;
-const url = "http://localhost:5000/c2g-consulting/us-central1/mbti/api";
+const url = "https://1ea616f0a98f.ngrok.io/c2g-consulting/us-central1/mbti/api";
 
 const Fetcher = async (entity, serviceUrl, method, data = null) => {
   let request;
@@ -44,7 +44,7 @@ const FetchWrapper = async (fetchCall) =>
     ? await Promise.race([
         fetchCall,
         new Promise((resolve, reject) =>
-          setTimeout(() => reject(new Error("Timeout")), 20000)
+          setTimeout(() => reject(new Error("Timeout")), 50000)
         ),
       ])
         .then((resp) => resp)
